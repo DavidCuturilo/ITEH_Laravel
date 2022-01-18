@@ -15,7 +15,7 @@ class Book extends Model
         return $this->belongsTo(Genre::class);
     }
 
-    public function writer()
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
