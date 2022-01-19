@@ -9,9 +9,9 @@ class UserBookController extends Controller
 {
     public function index($user_id)
     {
-        $posts = Book::get()->where('user_id',$user_id);
-        if(is_null($posts))
+        $books = Book::get()->where('user_id',$user_id);
+        if(is_null($books))
             return response()->json('Data not found', 404);
-        return response()->json($posts);
+        return response()->json($books);
     }
 }

@@ -6,6 +6,10 @@ use App\Http\Resources\BookCollection;
 use App\Http\Resources\BookResource;
 use App\Models\Book;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use SebastianBergmann\Environment\Console;
 
 class BookController extends Controller
 {
@@ -38,7 +42,27 @@ class BookController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'name'=>'required|string|max:255',
+            'slug'=>'required|string|max:100',
+            'year_of_publication'=>'required',
+            'edition'=>'required',
+            'genre_id'=>'required',
+        ]);
+
+        if($validator->fails())
+            return response()->json($validator->errors());
+
+        $book = Book::create([
+            'name'=>$request->name,
+            'slug'=>$request->slug,
+            'year_of_publication'=>$request->year_of_publication,
+            'edition'=>$request->edition,
+            'user_id'=>Auth::user()->id,
+            'genre_id'=>$request->genre_id
+        ]);
+
+        return response()->json(["Book is created successfully!", new BookResource($book)]);
     }
 
     /**
@@ -72,7 +96,25 @@ class BookController extends Controller
      */
     public function update(Request $request, Book $book)
     {
-        //
+        $validator = Validator::make($request->all(),[
+            'name'=>'required|string|max:255',
+            'slug'=>'required|string|max:100',
+            'year_of_publication'=>'required',
+            'edition'=>'required',
+            'genre_id'=>'required',
+        ]);
+
+        if($validator->fails())
+            return response()->json($validator->errors());
+
+        $book ->name = $request->name;
+        $book ->slug = $request->slug;
+        $book ->year_of_publication = $request->year_of_publication;
+        $book ->edition = $request->edition;
+        $book ->genre_id = $request->genre_id;
+
+        $book->save();
+        return response()->json(["Book is updated successfully", new BookResource($book)]);
     }
 
     /**
@@ -81,8 +123,10 @@ class BookController extends Controller
      * @param  \App\Models\Book  $book
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Book $book)
+    public function destroy($book_id)
     {
-        //
+        Book::destroy($book_id);
+
+        return response()->json("Book is deleted successfully!");
     }
 }

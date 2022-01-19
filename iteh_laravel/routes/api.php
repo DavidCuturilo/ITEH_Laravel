@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\AuthController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -18,14 +19,18 @@ use Doctrine\DBAL\Schema\Index;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+
+Route::post('/register', [AuthController::class, 'register']);
+Route::post('/login', [AuthController::class, 'login']);
+
+Route::group(['middleware'=>['auth:sanctum']], function(){
+    Route::get('/users', [UserController::class, 'index']);
+    Route::get('/users/{id}', [UserController::class, 'show']);
+
+
+    Route::resource('books', BookController::class)->only(['update','store','destroy']);
+    Route::get('/users/{id}/books', [UserBookController::class, 'index']);
+    Route::delete('/books/delete/{id}',[BookController::class, 'destroy']);
+    Route::post('/logout', [AuthController::class, 'logout']);
 });
-
-
-Route::get('/users', [UserController::class, 'index']);
-
-
-Route::resource('books', BookController::class);
-// Route::get('/users/{id}/books', [UserBookController::class, 'index'])->name('users.books.index');
-Route::resource('users.books', UserBookController::class)->only(['index']);
+Route::resource('books', BookController::class)->only(['index']);

@@ -44,9 +44,13 @@ class UserController extends Controller
      * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(User $user)
+    public function show($user_id)
     {
-        //
+        $user = User::find($user_id);
+        if (is_null($user)) {
+            return response()->json("Driver with id: $user_id not found", 404);
+        }
+        return response()->json($user);
     }
 
     /**
